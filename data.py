@@ -11,7 +11,6 @@ print(f'ano {tempo.year}')
 print(f'mes {tempo.month}')
 print(f'dia {tempo.day}')
 
-
 app = Flask(__name__)
 spec = FlaskPydanticSpec('flask',
                          title='Flask API',
@@ -26,22 +25,29 @@ def hello_world():
 
 @app.route("/<ano>/<mes>/<dia>")
 def data(ano, mes, dia):
-    '''
-    API para calcular a diferenças entre as duas datas
-    Endpoint:
-    'GET /<ano>/<mes>/<dia>'
-    :param ano: ano
-    :param mes: mes
-    :param dia: dia
-    converte os parametros para um objeto e depois para um objeto formato date
-    ´´´:Json:´´´
-        { "situacao": passado,
-        "dias de diferenca": 365,
-        "meses de diferenca": 12,
-        "anos de diferenca": 1
-    ```Erros possiveis:```
-        se a data inserida não for no formato date corretamente retorna mensagem de erro
-    '''
+    """
+        API para calcular a diferenças entre as duas datas
+        ### Endpoint:
+            GET /<ano>/<mes>/<dia>
+
+        ### Parameters:
+        - ano (str)
+        - mes (str)
+        - dia (str)
+
+
+        ### Returns:
+        ```json
+            {
+                "situacao": passado,
+                "dias de diferenca": 365,
+                "meses de diferenca": 12,
+                "anos de diferenca": 1
+            }
+        ```
+        ## Erros possiveis:
+         - se a `data` inserida não for no formato date corretamente retorna mensagem de ** erro 400 Bad Request **
+    """
     try:
         tempo_recebido = date(int(ano), int(mes), int(dia))
 
@@ -53,23 +59,17 @@ def data(ano, mes, dia):
             situacao = 'presente'
         delta = tempo_recebido - tempo
         dias_diferenca = delta.days
-        meses_diferenca = abs(tempo.year - tempo_recebido.year) * 12  + abs(tempo.month - tempo_recebido.month)
+        meses_diferenca = abs(tempo.year - tempo_recebido.year) * 12 + abs(tempo.month - tempo_recebido.month)
         anos_diferenca = tempo.year - tempo_recebido.year
         return jsonify({'situacao': situacao,
-                       'dias de diferenca': abs(dias_diferenca),
-                       'meses_diferenca': abs(meses_diferenca),
-                       'ano de diferenca': abs(anos_diferenca)
+                        'dias de diferenca': abs(dias_diferenca),
+                        'meses_diferenca': abs(meses_diferenca),
+                        'ano de diferenca': abs(anos_diferenca)
                         })
     except ValueError:
         return f'data inserida invalida'
-
-
-
-    # return jsonify({'situação': {situacao},
-    #                 'dias de diferença' {diasDiferente},
-    #                 'meses de diferença' {meses_diferenca},
-    #                 'anos de diferença' {ano_diferenca}
-    #                 })
+    except TypeError:
+        return jsonify({'erro 400': 'formato de data invalido',},400)
 
 
 
